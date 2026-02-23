@@ -8,6 +8,13 @@
     "kolibri-public-ui": {
       "type": "http",
       "url": "https://public-ui-kolibri-mcp.vercel.app/mcp",
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     }
   }
 }

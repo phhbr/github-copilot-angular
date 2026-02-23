@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { FormStep1Component } from './form-step-1.component';
-import { FormStep2Component } from './form-step-2.component';
+import { FormDataComponent } from './form-data.component';
 import { FormService } from '../services/form.service';
 import { FormData } from '../models/form.model';
 
@@ -8,19 +7,21 @@ import { FormData } from '../models/form.model';
   selector: 'app-form-container',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [FormStep1Component, FormStep2Component],
+  imports: [FormDataComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <div class="form-container">
       @if (!submitted()) {
-        @if (currentStep() === 1) {
-          <app-form-step-1 (nextStepEvent)="goToStep2()"></app-form-step-1>
-        } @else {
-          <app-form-step-2
-            (backEvent)="goToStep1()"
-            (submitEvent)="onSubmit($event)"
-          ></app-form-step-2>
-        }
+        <app-form-data
+          [stepTitle]="currentStep() === 1 ? 'Step 1: Invoice & Shipping Information' : 'Step 2: Review & Confirmation'"
+          [readonly]="currentStep() === 2"
+          [showTerms]="currentStep() === 2"
+          [submitLabel]="currentStep() === 1 ? 'Next Step' : 'Submit'"
+          [showBackButton]="currentStep() === 2"
+          (nextEvent)="goToStep2()"
+          (backEvent)="goToStep1()"
+          (submitEvent)="onSubmit($event)"
+        ></app-form-data>
       } @else {
         <div class="success-message">
           <h2>✓ Form Submitted Successfully!</h2>
@@ -55,6 +56,11 @@ import { FormData } from '../models/form.model';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
     .form-container {
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -24,9 +24,9 @@ test.describe('FormContainerComponent - Step 1', () => {
     await expect(page.locator('h2')).toContainText('Step 1: Invoice & Shipping Information');
 
     // Verify navigation sections
-    await expect(page.locator('h3')).toContainText('Personal Information');
-    await expect(page.locator('h3')).toContainText('Invoice Address');
-    await expect(page.locator('h3')).toContainText('Shipping Address');
+    await expect(page.getByRole('heading', { name: 'Personal Information' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Invoice Address' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Shipping Address' })).toBeVisible();
 
     // Verify next button exists
     const nextButton = page.locator('kol-button').filter({ has: page.locator('text=Next Step') }).first();

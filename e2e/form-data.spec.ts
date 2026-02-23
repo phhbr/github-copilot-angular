@@ -122,22 +122,14 @@ test.describe('FormDataComponent - Read-Only Mode', () => {
   test('should require terms acceptance before submission', async ({ page }) => {
     // Verify submit button is initially disabled
     const submitButton = page.locator('kol-button').filter({ has: page.locator('text=Submit') }).first();
-
-    // Get the button's aria-disabled or _disabled attribute state
-    // Note: KoliBri buttons may render this differently, so we check if button is clickable
-    const isDisabled = await submitButton.evaluate((button) =>
-      button.hasAttribute('_disabled') || button.getAttribute('_disabled') === 'true'
-    );
-    expect(isDisabled).toBeTruthy();
+    await expect(submitButton).toHaveAttribute('_disabled', '');
 
     // Check the terms checkbox
     const checkbox = page.locator('input[type="checkbox"]');
     await checkbox.check();
 
     // Verify submit button is now enabled
-    const isEnabledAfter = await submitButton.evaluate((button) =>
-      !button.hasAttribute('_disabled') || button.getAttribute('_disabled') === 'false'
-    );
-    expect(isEnabledAfter).toBeTruthy();
+    await expect(submitButton).not.toHaveAttribute('_disabled');
   });
 });
+

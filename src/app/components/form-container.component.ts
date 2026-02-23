@@ -30,19 +30,19 @@ import { FormData } from '../models/form.model';
           <div class="submitted-data">
             <div class="data-section">
               <h3>Personal Information</h3>
-              <p><strong>Name:</strong> {{ submittedData().firstName }} {{ submittedData().lastName }}</p>
+              <div><strong>Name:</strong> {{ submittedData().firstName }} {{ submittedData().lastName }}</div>
             </div>
-            
+
             <div class="data-section">
               <h3>Invoice Address</h3>
-              <p>{{ submittedData().invoiceAddress.street }}</p>
-              <p>{{ submittedData().invoiceAddress.city }}, {{ submittedData().invoiceAddress.zipCode }}</p>
+              <div>{{ submittedData().invoiceAddress.street }}</div>
+              <div>{{ submittedData().invoiceAddress.city }}, {{ submittedData().invoiceAddress.zipCode }}</div>
             </div>
-            
+
             <div class="data-section">
               <h3>Shipping Address</h3>
-              <p>{{ submittedData().shippingAddress.street }}</p>
-              <p>{{ submittedData().shippingAddress.city }}, {{ submittedData().shippingAddress.zipCode }}</p>
+              <div>{{ submittedData().shippingAddress.street }}</div>
+              <div>{{ submittedData().shippingAddress.city }}, {{ submittedData().shippingAddress.zipCode }}</div>
             </div>
           </div>
           

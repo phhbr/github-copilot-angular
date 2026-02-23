@@ -95,17 +95,14 @@ formTest.describe('FormDataComponent - Read-Only Mode (Advanced)', () => {
     // Verify read-only mode is active
     await formUtils.verifyReadOnlyMode();
 
-    // Try to interact with a field (should not allow text input)
+    // Verify all inputs are disabled in read-only mode
     const inputs = page.locator('input[type="text"]');
-    const firstInput = inputs.first();
-    const initialValue = await firstInput.inputValue();
+    const inputArray = await inputs.all();
 
-    // Attempt to change value - should be prevented by readonly/disabled
-    await firstInput.fill('HACKED');
-
-    // Verify value didn't change
-    const finalValue = await firstInput.inputValue();
-    expect(finalValue).toBe(initialValue);
+    for (const input of inputArray) {
+      const disabled = await input.getAttribute('disabled');
+      expect(disabled).not.toBeNull(); // Should be disabled
+    }
   });
 
   formTest('should require terms acceptance and prevent premature submission', async ({ formUtils, page }) => {
@@ -122,17 +119,19 @@ formTest.describe('FormDataComponent - Read-Only Mode (Advanced)', () => {
       has: page.locator('text=Submit'),
     }).first();
 
+    // Button should be disabled initially (check if it's not clickable)
     const isDisabledInitially = await submitButton.evaluate((button) =>
-      button.hasAttribute('_disabled') && button.getAttribute('_disabled') !== 'false'
+      button.hasAttribute('_disabled') || button.getAttribute('aria-disabled') === 'true'
     );
     expect(isDisabledInitially).toBeTruthy();
 
     // Accept terms
     await formUtils.acceptTerms();
+    await page.waitForLoadState('networkidle');
 
     // Verify submit button is now enabled
     const isEnabledAfter = await submitButton.evaluate((button) =>
-      !button.hasAttribute('_disabled') || button.getAttribute('_disabled') === 'false'
+      !button.hasAttribute('_disabled') && button.getAttribute('aria-disabled') !== 'true'
     );
     expect(isEnabledAfter).toBeTruthy();
   });

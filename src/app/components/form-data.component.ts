@@ -101,7 +101,7 @@ import { FormService } from '../services/form.service';
           <kol-input-checkbox
             [_label]="'I accept the Terms of Service'"
             [_checked]="formData().acceptTerms"
-            (input)="onTermsChange($event)"
+            [_on]="termsEvents"
           ></kol-input-checkbox>
         </div>
       }
@@ -119,6 +119,7 @@ import { FormService } from '../services/form.service';
           [_label]="submitLabel()"
           [_variant]="'primary'"
           [_disabled]="showTerms() && !formData().acceptTerms"
+          [attr._disabled]="(showTerms() && !formData().acceptTerms) ? '' : null"
           (click)="submit()"
         ></kol-button>
       </div>
@@ -184,24 +185,33 @@ export class FormDataComponent {
     this.formService.updateFormData(updates);
   }
 
+  // Use KoliBri's _on callback API with `onChange` (not `onInput`).
+  // KoliBri's checkbox calls onFacade.onInput(e, false, n) – the second argument
+  // is always hardcoded to `false`, making onInput useless for reading the new
+  // checked state. `onChange` is called as onFacade.onChange(e, getModelValue()),
+  // so the second argument correctly reflects the new checked value.
+  protected readonly termsEvents = {
+    onChange: (_event: Event, value: unknown) => {
+      this.updateFormData({ acceptTerms: !!value });
+    },
+  };
+
   protected onFieldChange(event: Event, field: 'firstName' | 'lastName') {
-    const value = (event.target as any).value;
+    // KoliBri's onInput handler synchronously sets _value = inputRef.value
+    // before the event exits the shadow DOM, so event.target._value is
+    // reliable across all browsers regardless of shadow DOM retargeting.
+    const value = (event.target as any)._value ?? '';
     this.updateFormData({ [field]: value });
   }
 
   protected onAddressChange(event: Event, addressType: 'invoice' | 'shipping', field: string) {
-    const value = (event.target as any).value;
+    const value = (event.target as any)._value ?? '';
     const current = this.formData();
     const addressKey = addressType === 'invoice' ? 'invoiceAddress' : 'shippingAddress';
-    
+
     this.updateFormData({
       [addressKey]: { ...current[addressKey], [field]: value }
     });
-  }
-
-  protected onTermsChange(event: Event) {
-    const value = (event.target as any).checked;
-    this.updateFormData({ acceptTerms: value });
   }
 
   protected submit = () => {
